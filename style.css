@@ -1,0 +1,103 @@
+.header-init{
+    background-color: black;
+    height: 50px;
+    width: 100%;
+}
+
+img {
+    height: 90%;
+    width: auto;
+    max-height: 90%;
+    max-width: 90%;
+    object-fit: contain;
+}
+
+.h2-main{
+    color: black;
+    font-size: 40px;
+    text-align: center;
+}
+
+.h1-main{
+    color: black;
+    font-size: 60px;
+    text-align: center;
+}
+
+.home-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.search-input{
+    border-radius: 25px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 80%;
+    max-width: 400px;
+}
+
+.login-box{
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 40%;
+    width: 30%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding-top: 10px;
+    padding-left: 10px;
+}
+
+body{
+    background: rgb(35,17,67); 
+    background: linear-gradient(180deg, rgba(35,17,67,0.52) 0%, rgba(217,217,217,1) 100%);
+}
+
+.tab{
+    float: left;
+    border: none;
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.msg-add-icons{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    max-width: 50%;
+    width: 30%;
+    gap: 10%;
+}
+
+.profile-friends li{
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    gap: 10px;
+    align-items: center;
+}
+
+.profile-friends img {
+    max-width: 30%;
+}
+
+ul{
+    list-style: none;
+}
