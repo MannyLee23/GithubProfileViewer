@@ -1,3 +1,4 @@
+import { Button } from '@mui/material';
 import '../../index.css';
 
 function PublicRepos() {
@@ -12,7 +13,7 @@ function PublicRepos() {
                 <section className='public-repos-list-item'>
                     <li>
                         <h3>Project 1</h3>
-                        <button>Share</button>
+                        <Button variant="contained">Share</Button>
                         <button>Like</button>
                     </li>
                     <li>
