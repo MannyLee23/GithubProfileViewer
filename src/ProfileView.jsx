@@ -1,19 +1,14 @@
 import Navbar from './components/Navbar';
 import './index.css';
-import React , { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Octokit } from "@octokit/rest";
 import { useParams } from 'react-router-dom';
-import { Button } from '@mui/material';
+import '@mui/material';
 import MessageForm from './MessageForm';
 
 const octokit = new Octokit();
 
-
-function ProfileView(){
-
-  // const [rerender, setRerender] = useState(false);
-  // const [userData, setUserData] = useState({});
-
+function ProfileView() {
   const { username } = useParams();
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,6 +16,9 @@ function ProfileView(){
   const [showAddFriendPopup, setShowAddFriendPopup] = useState(false);
   const [showMessageFormPopup, setShowMessageFormPopup] = useState(false);
   const [friends, setFriends] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRepo, setSelectedRepo] = useState(null);
+  const [showSharePopup, setShowSharePopup] = useState(false);
 
   useEffect(() => {
     async function fetchUserData() {
@@ -37,6 +35,7 @@ function ProfileView(){
     fetchUserData();
   }, [username]);
 
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
@@ -44,7 +43,7 @@ function ProfileView(){
     setShowAddFriendPopup(true);
   };
 
-  const handleClosePopup = () => {
+  const handleCloseAddFriendPopup = () => {
     setShowAddFriendPopup(false);
   };
 
@@ -61,69 +60,104 @@ function ProfileView(){
     setShowMessageFormPopup(false);
   };
 
-    return <div>
-      <Navbar />
-      <div className="profile-view">
-        <div style={{padding: "1em",  borderRadius: "10px", height: "100%"}} className="sidebar"> <Sidebar userData={userData} 
-          onAddFriendClick={handleAddFriendClick } onMessageIconClick={handleMessageIconClick}/> </div>
-        <div style={{padding: "1em",  borderRadius: "10px"}} className="profile-info"> <ProfileInfo /> </div>
-        <div style={{padding: "1em",  borderRadius: "10px"}} className="public-repos-list"> <PublicRepos username={username}/> </div>
-        {/* <div style={{ padding: "1em", borderRadius: "10px" }} className="message-form"><MessageForm recipientEmail={userData.email} /> </div> */}
-      </div>
-      {showAddFriendPopup && <AddFriendPopup onClose={handleClosePopup} />}
-      {showMessageFormPopup && <MessageFormPopup recipientEmail={userData.email} onClose={handleCloseMessageFormPopup} />}
-    </div>;
-};
+  const handleShareClick = (repo) => {
+    setSelectedRepo(repo);
+    setShowSharePopup(true);
+  };
 
+  const handleCloseSharePopup = () => {
+    setShowSharePopup(false);
+    setSelectedRepo(null);
+  };
+
+  const handleLikeClick = (event) => {
+    event.target.classList.toggle('liked');
+    if (event.target.classList.contains('liked')) {
+      event.target.style.backgroundColor = 'pink';
+    } else {
+      event.target.style.backgroundColor = '';
+    }
+  };
+
+
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
   return (
-      <div className="sidebar">
+    <div>
+      <Navbar />
+      <div className='profile-view'>
+        <div className="sidebar">
+          <Sidebar userData={userData} friends={friends} onAddFriendClick={handleAddFriendClick} onMessageIconClick={handleMessageIconClick} />
+        </div>
+        <div className="profile-info">
+          <ProfileInfo />
+        </div>
+        <div className="public-repos-list">
+          <PublicRepos username={username} onShareClick={handleShareClick}/>
+        </div>
+      </div>
+      {showAddFriendPopup && userData && <AddFriendPopup userData={userData} onClose={handleCloseAddFriendPopup} onAddFriend={handleAddFriend} />}
+      {showMessageFormPopup && <MessageFormPopup recipientEmail={userData.email} onClose={handleCloseMessageFormPopup} />}
+      {showSharePopup &&  <SharePopup repoName={selectedRepo.name} onClose={handleCloseSharePopup} />}
+    </div>
+  );
+}
+
+function Sidebar({ userData, friends, onAddFriendClick, onMessageIconClick }) {
+  if (!userData) {
+    return <div>Loading user data...</div>;
+  }
+
+  return (
+    <div className="sidebar">
       <img src={userData.avatar_url} alt={`${userData.login}'s avatar`} />
       <h3>{userData.name}</h3>
       <h4>@{userData.login}</h4>
-      <div class="msg-add-icons">
-          <button onClick={onMessageIconClick}>Message</button>
-          <button onClick={onAddFriendClick}>Add Friend</button>
+      <div className="msg-add-icons">
+        <button onClick={onMessageIconClick}>Message</button>
+        <button onClick={onAddFriendClick}>Add Friend</button>
       </div>
-      <ul aria-label="Quandale's Friends" class="profile-friends">
-          <li>
-              <img src="images/bitmoji.png"></img>
-              <p>@speed</p>
+      <ul aria-label="Friends" className="profile-friends">
+        {friends.map((friend, index) => (
+          <li key={index}>
+            <img src={friend.avatar_url} alt={`${friend.login}'s avatar`} />
+            <p>@{friend.login}</p>
           </li>
-          <li>
-              <img src="images/bitmoji.png"></img>
-              <p>@speed</p>
-          </li>
-          <li>
-              <img src="images/bitmoji.png"></img>
-              <p>@speed</p>
-          </li>
-          <li>
-              <img src="images/bitmoji.png"></img>
-              <p>@speed</p>
-          </li>
-          <li>
-              <img src="images/bitmoji.png"></img>
-              <p>@speed</p>
-          </li>
-          
+        ))}
       </ul>
-  </div>
+    </div>
   );
-};
+}
 
-function AddFriendPopup({ onClose }) {
+function AddFriendPopup({ userData, onClose, onAddFriend }) {
+  const [friendUsername, setFriendUsername] = useState('');
+
+  const handleAddFriendClick = async () => {
+    try {
+      const { data } = await octokit.users.getByUsername({ username: friendUsername });
+      onAddFriend(data);
+    } catch (error) {
+      console.error('Error adding friend:', error);
+    }
+  };
+
   return (
     <div className="popup">
       <div className="popup-content">
-        <h2>Add Friend</h2>
-        <p>Do you want to add this user as a friend?</p>
+        <input
+          type="text"
+          placeholder="Enter friend's username"
+          value={friendUsername}
+          onChange={(e) => setFriendUsername(e.target.value)}
+        />
         <button onClick={onClose}>Close</button>
-        <button onClick={() => { /* Add friend logic here */ }}>Add Friend</button>
+        <button onClick={handleAddFriendClick}>Add Friend</button>
       </div>
     </div>
   );
-};
+}
 
 function MessageFormPopup({ recipientEmail, onClose }) {
   return (
@@ -135,7 +169,7 @@ function MessageFormPopup({ recipientEmail, onClose }) {
       </div>
     </div>
   );
-};
+}
 
 function SharePopup({ repoName, onClose }) {
   return (
@@ -152,27 +186,26 @@ function SharePopup({ repoName, onClose }) {
       </div>
     </div>
   );
-};
+}
 
 function ProfileInfo() {
-    return (
-        <div className="profile-info"> <h1 style={{background: "rgb(223,220,240)", 
-            background: "linear-gradient(90deg, rgba(223,220,240,1) 0%, rgba(118,102,162,1) 100%)", 
-            border: "1px solid black", padding: "10%", width: "180%", textAlign: "center", paddingTop: "4%", paddingBottom: "4%"}}>Profile Information</h1> </div>
-    );
-};
+  return (
+    <div className="profile-info">
+      <h1>Profile Information</h1>
+    </div>
+  );
+}
 
-function PublicRepos({ username}) {
+function PublicRepos({ username, onShareClick }) {
   const [repos, setRepos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showSharePopup, setShowSharePopup] = useState(false);
-  const [selectedRepo, setSelectedRepo] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     async function fetchRepos() {
       try {
-        const { data } = await octokit.repos.listForUser({ username });
+        const { data } = await octokit.repos.listForUser({ username, per_page: 100 });
         setRepos(data);
       } catch (error) {
         setError(error);
@@ -201,25 +234,26 @@ function PublicRepos({ username}) {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
 
+  const filteredRepos = repos.filter(repo =>
+    repo.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-   <div>
+    <div>
       <h2>Public Repositories</h2>
-      <ul>
-        {repos.map((repo) => (
-          <li key={repo.id} className="public-repos-list-item">
-            <h3>{repo.name}</h3>
-            <p>{repo.description}</p>
-            <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
-              View Repository
-            </a>
-            <button onClick={() => handleShareClick(repo)}>Share</button>
-            <button onClick={handleLikeClick}>Like</button>
-          </li>
-        ))}
+      <ul className='list-group'>
+        {filteredRepos.map((repo) => (
+            <li key={repo.id} className="list-group-item list-group-item-dark">
+              <h4 style={{ flex: 1 }}><a className="icon-link" href={repo.html_url} target="_blank" rel="noopener noreferrer"> {repo.name} </a></h4>
+              <div className="repo-buttons">
+                <button className="btn btn-light" onClick={()=>handleShareClick(repo)}>Share</button>
+                <button className="btn btn-light" onClick={()=>handleLikeClick}>Like</button>
+              </div>
+            </li>
+          ))}
       </ul>
-      {showSharePopup && <SharePopup repoName={selectedRepo.name} onClose={handleCloseSharePopup} />}
     </div>
   );
-};
+}
 
 export default ProfileView;

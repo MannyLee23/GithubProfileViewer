@@ -40,3 +40,19 @@
 .read-the-docs {
   color: #888;
 }
+
+body {
+  background-color: #2c313c; /* Dark background color */
+  color: #bbbbbb; /* Light gray text color */
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif; /* Optional: Set a default font */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #bbbbbb; /* Light gray for headings */
+}
+
+a {
+  color: #aaaaaa; /* Slightly darker gray for links */
+}

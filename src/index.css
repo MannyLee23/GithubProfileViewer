@@ -6,9 +6,11 @@
   /* color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #242424; */
+  color-scheme: dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #343b48;
+  background: "#bbbbbb";
 
-  background: rgb(35,17,67); 
-  background: linear-gradient(180deg, rgba(35,17,67,0.52) 0%, rgba(217,217,217,1) 100%);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -23,11 +25,11 @@
 }
 
 img {
-  height: 90%;
   width: auto;
   max-height: 90%;
   max-width: 90%;
   object-fit: contain;
+
 }
 
 .h2-main{
@@ -78,9 +80,19 @@ html, body{
   
 }
 
-body{
-  background: rgb(35,17,67); 
-  background: linear-gradient(180deg, rgba(35,17,67,0.52) 0%, rgba(217,217,217,1) 100%);
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif; /* Optional: Set a default font */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #bbbbbb; /* Light gray for headings */
+}
+
+a {
+  color: #aaaaaa; /* Slightly darker gray for links */
+  text-decoration: none; /* Remove underline */
 }
 
 .profile-view{
@@ -91,13 +103,16 @@ body{
   width: 100%;
 }
 
-.sidebar{
+ .sidebar{
+  background-color: inherit;
+  padding: 4% 8% 0 4%;
   width: 32%;
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
+  text-align: center;
 }
 
 .profile-info, .public-repos-list{
@@ -133,8 +148,6 @@ body{
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  max-width: 50%;
-  width: 30%;
   gap: 10%;
 }
 
@@ -155,12 +168,63 @@ ul{
 }
 
 .profile-info{
-  display: flex;
+  display: "flex"; 
+  justify-content: "center";
+  height: "40%"; 
+  padding: "1em";  
+  border-radius: "10px"
 }
 
 .public-repos-list li{
   display: flex;
-  flex-direction: row;
+  width: 100%;
+  justify-content: space-between; /* Ensure buttons are aligned to the right */
+  align-items: center;
+  background-color: #343b48;
+  gap: 10px;
+}
+
+.repos-list-container {
+  max-height: 324px; /* Adjust the height as needed */
+  overflow-y: auto;
+  max-width: 80%;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #343b48;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal-dialog {
+  max-width: 100%; /* Ensure it takes full width */
+}
+
+.modal-dialog-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-dialog-scrollable {
+  overflow-y: auto;
+}
+
+.blur {
+  filter: blur(5px); /* Apply blur effect */
+  pointer-events: none; /* Disable interactions with blurred content */
 }
 
 li h3{

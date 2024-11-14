@@ -62,10 +62,18 @@ function Navbar() {
       <nav className="navbar bg-dark">
       <div className="container-fluid">
         <a style={{ color: 'white' }} className="navbar-brand" href="/"><strong>Home</strong></a>
+        <form class="d-flex" role="search">
+          {window.location.href !== 'http://localhost:5173/' && (
+            <>
+              <input className="form-control me-2" type="search" placeholder="Enter Github Username.." aria-label="Search"/>
+              <button className="btn btn-dark" type="submit" onClick={() => window.location.href = `/profile/${document.querySelector('.form-control').value}`}>Search</button>
+            </>
+          )}
+    </form>
         <div className="navbar-text" style={{ color: 'white' }}>
         {localStorage.getItem('accessToken') ?
         <>
-        <button onClick={() => { localStorage.removeItem('accessToken'); setRerender(!rerender); }}>
+        <button className="btn btn-dark" Click={() => { localStorage.removeItem('accessToken'); setRerender(!rerender); }}>
           Logout {Object.keys(userData).length !== 0 ? `(${userData.login})` : ''}
         </button>
         </>
