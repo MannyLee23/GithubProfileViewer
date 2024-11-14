@@ -236,7 +236,7 @@ function PublicRepos({ username, onShareClick }) {
 
   const filteredRepos = repos.filter(repo =>
     repo.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );g
+  );
 
   return (
     <div>
